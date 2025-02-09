@@ -1,13 +1,14 @@
 'use client'
+
 import { redirect } from "next/navigation";
 import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const Login = () => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
-    // const navigate = useNavigate();
 
     const handleLogin = async () => {
         const deviceId = navigator.userAgent; // Simple device identifier
@@ -26,11 +27,31 @@ const Login = () => {
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
-            <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-            <button onClick={handleLogin}>Join Game</button>
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-cyan-500 to-blue-500">
+            <Card className="w-[350px]">
+                <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-center">Login to CTF Game</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        <Input
+                            type="text"
+                            placeholder="Username"
+                            onChange={(e) => setUsername(e.target.value)}
+                            className="w-full"
+                        />
+                        <Input
+                            type="email"
+                            placeholder="Email"
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full"
+                        />
+                        <Button onClick={handleLogin} className="w-full">
+                            Join Game
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 };
