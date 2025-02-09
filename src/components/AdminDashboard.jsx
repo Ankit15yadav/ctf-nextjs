@@ -1,41 +1,48 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
-import io from "socket.io-client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import io from "socket.io-client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
-const socket = io("https://ctf-round.onrender.com", { transports: ["websocket"] })
+const socket = io("https://ctf-round.onrender.com", { transports: ["websocket"] });
 
 const AdminDashboard = () => {
-    const { roomID } = useParams()
-    const [players, setPlayers] = useState([])
+    const { roomID } = useParams();
+    const [players, setPlayers] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchProgress = async () => {
-            const response = await fetch(`https://ctf-round.onrender.com/admin/progress/${roomID}`)
-            const data = await response.json()
-            setPlayers(data)
-        }
+            try {
+                const response = await fetch(`https://ctf-round.onrender.com/admin/progress/${roomID}`);
+                const data = await response.json();
+                setPlayers(data);
+            } catch (error) {
+                console.error("Error fetching progress:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-        fetchProgress()
+        fetchProgress();
 
-
-        socket.emit("joinRoom", roomID)
+        socket.emit("joinRoom", roomID);
 
         socket.on("progressUpdate", (data) => {
-            console.log("Received progress update:", data)
-
+            console.log("Received progress update:", data);
             setPlayers((prevPlayers) =>
-                prevPlayers.map((player) => (player._id === data.userId ? { ...player, progress: data.checkpoint } : player)),
-            )
-        })
+                prevPlayers.map((player) =>
+                    player._id === data.userId ? { ...player, progress: data.checkpoint } : player
+                )
+            );
+        });
 
         return () => {
-            socket.off("progressUpdate")
-        }
-    }, [roomID])
+            socket.off("progressUpdate");
+        };
+    }, [roomID]);
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-8">
@@ -44,22 +51,29 @@ const AdminDashboard = () => {
                     <CardTitle className="text-3xl font-bold text-center">Admin Dashboard</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-6">
-                        {players.map((player) => (
-                            <div key={player._id} className="bg-white p-4 rounded-lg shadow">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-lg font-semibold">{player.username}</span>
-                                    <span className="text-sm font-medium">{player.progress}/10</span>
+                    {isLoading ? (
+                        <div className="flex justify-center items-center py-8">
+                            <span>Loading...</span>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            {players.map((player) => (
+                                <div key={player._id} className="bg-white p-4 rounded-lg shadow">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-lg font-semibold">{player.username}</span>
+                                        <span className="text-sm font-medium">
+                                            {player.progress}/10
+                                        </span>
+                                    </div>
+                                    <Progress value={player.progress * 10} className="w-full" />
                                 </div>
-                                <Progress value={player.progress * 10} className="w-full" />
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
-    )
-}
+    );
+};
 
-export default AdminDashboard
-
+export default AdminDashboard;
