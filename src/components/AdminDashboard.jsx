@@ -21,6 +21,7 @@ const AdminDashboard = () => {
 
         fetchProgress()
 
+
         socket.emit("joinRoom", roomID)
 
         socket.on("progressUpdate", (data) => {
