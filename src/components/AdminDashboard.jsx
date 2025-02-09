@@ -6,13 +6,13 @@ import io from "socket.io-client";
 const socket = io("https://ctf-round.onrender.com", { transports: ["websocket"] });
 
 const AdminDashboard = () => {
-    const { roomId } = useParams();
+    const { roomID } = useParams();
     const [players, setPlayers] = useState([]);
 
     useEffect(() => {
         // Fetch initial player data
         const fetchProgress = async () => {
-            const response = await fetch(`https://ctf-round.onrender.com/admin/progress/${roomId}`);
+            const response = await fetch(`https://ctf-round.onrender.com/admin/progress/${roomID}`);
             const data = await response.json();
             setPlayers(data);
         };
@@ -20,7 +20,7 @@ const AdminDashboard = () => {
         fetchProgress();
 
         // Listen for real-time progress updates
-        socket.emit("joinRoom", roomId);
+        socket.emit("joinRoom", roomID);
 
         socket.on("progressUpdate", (data) => {
             console.log("Received progress update:", data);
@@ -35,7 +35,7 @@ const AdminDashboard = () => {
         return () => {
             socket.off("progressUpdate");
         };
-    }, [roomId]);
+    }, [roomID]);
 
     return (
         <div>
