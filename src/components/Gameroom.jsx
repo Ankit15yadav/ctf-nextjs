@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import CheckpointTenCelebration from "./Checkpoint";
 
 const socket = io("https://ctf-round.onrender.com", { transports: ["websocket"] });
 
@@ -86,18 +87,7 @@ const GameRoom = () => {
 
     if (progress === 10) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-400 to-blue-500">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8 }}
-                    className="text-center text-white p-8 bg-white/20 rounded-xl shadow-lg"
-                >
-                    <h1 className="text-3xl font-bold mb-4">Congratulations! 🎉</h1>
-                    <p className="text-lg">You have successfully completed the round.</p>
-                    <p className="text-md mt-2">Well done on clearing all 10 checkpoints!</p>
-                </motion.div>
-            </div>
+            <CheckpointTenCelebration />
         );
     }
 
