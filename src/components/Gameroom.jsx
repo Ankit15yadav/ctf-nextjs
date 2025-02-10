@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import io from "socket.io-client";
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 const socket = io("https://ctf-round.onrender.com", { transports: ["websocket"] });
 
@@ -31,8 +32,8 @@ const GameRoom = () => {
                 localStorage.setItem("progress", data.progress);
             } catch (error) {
                 console.error("Error fetching progress:", error);
-                toast.error('Error', {
-                    description: 'Failed to fetch progress. Please try again.',
+                toast.error("Error", {
+                    description: "Failed to fetch progress. Please try again.",
                 });
             } finally {
                 setIsLoading(false);
@@ -62,12 +63,12 @@ const GameRoom = () => {
                 localStorage.setItem("progress", newProgress);
                 socket.emit("progressUpdate", { userId, checkpoint: newProgress });
 
-                toast.success('Progress Updated', {
+                toast.success("Progress Updated", {
                     description: `You've reached checkpoint ${newProgress}/10!`,
                 });
             } catch (error) {
-                toast.error('Error', {
-                    description: 'Failed to update progress. Please try again.',
+                toast.error("Error", {
+                    description: "Failed to update progress. Please try again.",
                 });
             } finally {
                 setIsUpdating(false);
@@ -79,6 +80,23 @@ const GameRoom = () => {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-400 to-blue-500">
                 <Loader2 className="h-8 w-8 animate-spin text-white" />
+            </div>
+        );
+    }
+
+    if (progress === 10) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-400 to-blue-500">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8 }}
+                    className="text-center text-white p-8 bg-white/20 rounded-xl shadow-lg"
+                >
+                    <h1 className="text-3xl font-bold mb-4">Congratulations! 🎉</h1>
+                    <p className="text-lg">You have successfully completed the round.</p>
+                    <p className="text-md mt-2">Well done on clearing all 10 checkpoints!</p>
+                </motion.div>
             </div>
         );
     }
